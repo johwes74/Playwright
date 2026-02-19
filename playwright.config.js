@@ -20,8 +20,9 @@ module.exports = defineConfig({
   ],
   webServer: {
     command: 'node demo-app/server.js',
-    url: 'http://localhost:3000',
+    // Use 'port' (plain TCP check) rather than 'url' to avoid DNS resolution
+    // differences between CI environments where 'localhost' may resolve to ::1.
+    port: 3000,
     reuseExistingServer: !process.env.CI,
-    stdout: 'pipe',
   },
 });
