@@ -1,31 +1,14 @@
-const { test, expect } = require('@playwright/test');
-
 /**
- * Accept Google's cookie consent dialog if it appears (common in CI environments).
+ * Google Search tests — retired.
+ *
+ * These tests depended on Google's live website and were flaky in CI
+ * (consent dialogs, selector changes, bot-detection).
+ *
+ * See todo-app.spec.js for the comprehensive, self-contained demo.
  */
-async function acceptConsentIfPresent(page) {
-  try {
-    const consentButton = page.getByRole('button', { name: /accept all|acceptera alla|godkänn/i });
-    await consentButton.click({ timeout: 3000 });
-  } catch {
-    // No consent dialog present, continue
-  }
-}
 
-test.describe('Google Search', () => {
-  test('should load Google homepage', async ({ page }) => {
-    await page.goto('https://www.google.com');
-    await acceptConsentIfPresent(page);
-    await expect(page).toHaveTitle(/Google/);
-  });
+const { test } = require('@playwright/test');
 
-  test('should perform a search', async ({ page }) => {
-    await page.goto('https://www.google.com');
-    await acceptConsentIfPresent(page);
-    await page.getByLabel('Sök', { exact: false }).or(page.getByRole('combobox')).first().fill('Playwright testing');
-    await page.keyboard.press('Enter');
-    await page.waitForURL(/search/);
-    // #rso is Google's current organic results container (replaced the old #search id)
-    await expect(page.locator('#rso')).toBeVisible();
-  });
+test.describe.skip('Google Search (retired – see todo-app.spec.js)', () => {
+  // Tests removed in favour of the local Todo App demo.
 });
