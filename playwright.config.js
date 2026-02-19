@@ -9,7 +9,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
   },
   projects: [
@@ -20,9 +20,10 @@ module.exports = defineConfig({
   ],
   webServer: {
     command: 'node demo-app/server.js',
-    // Use 'port' (plain TCP check) rather than 'url' to avoid DNS resolution
-    // differences between CI environments where 'localhost' may resolve to ::1.
-    port: 3000,
+    // Use an explicit IPv4 address instead of 'localhost' so Playwright's HTTP
+    // readiness poll is not subject to DNS resolution differences in CI
+    // (ubuntu-latest can resolve 'localhost' to ::1 before 127.0.0.1).
+    url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
   },
 });
