@@ -23,7 +23,7 @@
 
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://127.0.0.1:3000';
 
 // ── Shared helper ─────────────────────────────────────────────────────────────
 
@@ -329,7 +329,7 @@ test.describe('10 · Network interception', () => {
 
     await page.goto(BASE_URL);
     // The app makes exactly one request — for its own HTML
-    expect(urls.some(u => u.includes('localhost:3000'))).toBe(true);
+    expect(urls.some(u => u.includes('127.0.0.1:3000'))).toBe(true);
   });
 
   test('route.abort() can block specific requests', async ({ page }) => {
