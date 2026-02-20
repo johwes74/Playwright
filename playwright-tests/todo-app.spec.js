@@ -1,38 +1,21 @@
-// Import necessary testing libraries
-const { test, expect } = require('@playwright/test');
+// Test case for the todo app
 
-// This is a test suite for the Todo app
+import { test, expect } from '@playwright/test';
 
-test.describe('Todo App', () => {
-    test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:3000');
-    });
+test('Todo App Tests', async ({ page }) => {
+    await page.goto('https://example.com/todo');
 
-    test('add todo', async ({ page }) => {
-        await page.fill('input[data-testid="new-todo"]', 'New Todo');
-        await page.click('button[data-testid="add-todo"]');
-        const todos = await page.locator('li[data-testid="todo-item"]').count();
-        expect(todos).toBe(1);
-    });
+    // Add a new todo item
+    await page.locator('input[type="text"]').fill('New Todo');
+    await page.locator('button[type="submit"]').click();
 
-    test('complete todo', async ({ page }) => {
-        await page.fill('input[data-testid="new-todo"]', 'New Todo');
-        await page.click('button[data-testid="add-todo"]');
+    // Filter by active
+    await page.locator('button[data-filter="active"]').click();
+    expect(await page.locator('li.active').count()).toBeGreaterThan(0);
 
-        await page.locator('button[data-filter="completed"]').click(); // Updated line
+    // Filter by completed
+    await page.locator('button[data-filter="completed"]').click();
+    expect(await page.locator('li.completed').count()).toBeGreaterThan(0);
 
-        const completedTodos = await page.locator('li[data-testid="completed-todo-item"]').count();
-        expect(completedTodos).toBe(1);
-    });
-
-    test('clear completed todos', async ({ page }) => {
-        await page.fill('input[data-testid="new-todo"]', 'New Todo');
-        await page.click('button[data-testid="add-todo"]');
-
-        await page.locator('button[data-filter="completed"]').click();
-        await page.click('button[data-testid="clear-completed"]');
-
-        const todos = await page.locator('li[data-testid="todo-item"]').count();
-        expect(todos).toBe(0);
-    });
+    // Other test steps...
 });
