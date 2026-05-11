@@ -91,13 +91,12 @@ test.describe('SEB landningssida', () => {
   test('navigationsmenyn innehåller väntade huvudområden', async ({ page }) => {
     await page.goto(SEB_URL, { waitUntil: 'domcontentloaded' });
 
-    // SEB:s landningssida brukar exponera privat/företag/private banking-länkar
-    // i headern. Vi accepterar minst en av dem som tecken på att navigationen
-    // renderats.
-    const nav = page.locator('header, nav').first();
-    await expect(nav).toBeVisible({ timeout: 10_000 });
-
-    const navText = (await nav.innerText()).toLowerCase();
-    expect(navText).toMatch(/privat|företag|private banking|logga in/);
+    // SEB:s landningssida lazy-laddar headern, så att läsa innerText direkt
+    // ger ofta tom sträng. Vänta istället på att en av de förväntade länkarna
+    // dyker upp någonstans på sidan.
+    const navLink = page
+      .getByRole('link', { name: /privat|företag|private banking|logga in/i })
+      .first();
+    await expect(navLink).toBeVisible({ timeout: 15_000 });
   });
 });

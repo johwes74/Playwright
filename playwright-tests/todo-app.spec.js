@@ -178,13 +178,13 @@ test.describe('5 · Filtering', () => {
   });
 
   test('Active filter hides completed todos', async ({ page }) => {
-    await page.getByRole('button', { name: 'Active' }).click();
+    await page.getByRole('button', { name: 'Active', exact: true }).click();
     await expect(page.getByRole('listitem')).toHaveCount(2);
     await expect(page.getByText('Buy milk')).not.toBeVisible();
   });
 
   test('Completed filter shows only done todos', async ({ page }) => {
-    await page.getByRole('button', { name: 'Completed' }).click();
+    await page.getByRole('button', { name: 'Completed', exact: true }).click();
     await expect(page.getByRole('listitem')).toHaveCount(1);
     await expect(page.getByText('Buy milk')).toBeVisible();
   });
