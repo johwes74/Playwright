@@ -97,7 +97,6 @@ test.describe('SEB landningssida', () => {
     const nav = page.locator('header, nav').first();
     await expect(nav).toBeVisible({ timeout: 10_000 });
 
-    const navText = (await nav.innerText()).toLowerCase();
-    expect(navText).toMatch(/privat|företag|private banking|logga in/);
+    await expect(nav).toContainText(/privat|företag|private banking|logga in/i);
   });
 });
