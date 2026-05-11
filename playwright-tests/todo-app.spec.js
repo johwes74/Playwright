@@ -184,7 +184,7 @@ test.describe('5 · Filtering', () => {
   });
 
   test('Completed filter shows only done todos', async ({ page }) => {
-    await page.getByRole('button', { name: 'Completed' }).click();
+    await page.getByRole('button', { name: 'Completed', exact: true }).click();
     await expect(page.getByRole('listitem')).toHaveCount(1);
     await expect(page.getByText('Buy milk')).toBeVisible();
   });
