@@ -26,6 +26,17 @@ jobs:
         if: always()
         run: node scripts/generate-summary.js
 
+      - name: Generate mobile-friendly report
+        if: always()
+        run: node scripts/generate-mobile-report.js
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-report
+          path: mobile-report.html
+          retention-days: 30
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

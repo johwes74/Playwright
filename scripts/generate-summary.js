@@ -72,6 +72,49 @@ if (flaky.length > 0) {
   md += '\n';
 }
 
+// All test results grouped by top-level suite (file)
+const allTests = [];
+function walkAll(suiteList, ancestors) {
+  for (const suite of suiteList || []) {
+    const breadcrumb = ancestors ? `${ancestors} › ${suite.title}` : suite.title;
+    for (const spec of suite.specs || []) {
+      for (const test of spec.tests || []) {
+        const result = test.results?.[0];
+        const duration = result?.duration ?? 0;
+        const icon = { expected: '✅', unexpected: '❌', flaky: '🔁', skipped: '⏭️' }[test.status] ?? '❓';
+        allTests.push({ file: ancestors || suite.title, label: spec.title, icon, duration });
+      }
+    }
+    walkAll(suite.suites, breadcrumb);
+  }
+}
+walkAll(suites, '');
+
+// Group by file (first path segment)
+const byFile = {};
+for (const t of allTests) {
+  const key = t.file.split(' › ')[0] || t.file;
+  if (!byFile[key]) byFile[key] = [];
+  byFile[key].push(t);
+}
+
+if (Object.keys(byFile).length > 0) {
+  md += `### All Tests\n\n`;
+  for (const [file, tests] of Object.entries(byFile)) {
+    const passCount = tests.filter(t => t.icon === '✅').length;
+    const failCount = tests.filter(t => t.icon === '❌').length;
+    const summary = failCount > 0
+      ? `${passCount}/${tests.length} passed — ${failCount} failed`
+      : `${passCount}/${tests.length} passed`;
+    md += `<details><summary><strong>${file}</strong> &nbsp; ${summary}</summary>\n\n`;
+    for (const t of tests) {
+      const ms = t.duration > 0 ? ` _(${(t.duration / 1000).toFixed(2)}s)_` : '';
+      md += `- ${t.icon} ${t.label}${ms}\n`;
+    }
+    md += `\n</details>\n\n`;
+  }
+}
+
 const summaryFile = process.env.GITHUB_STEP_SUMMARY;
 if (summaryFile) {
   fs.appendFileSync(summaryFile, md);
