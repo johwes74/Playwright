@@ -10,6 +10,7 @@ module.exports = defineConfig({
   reporter: process.env.CI
     ? [
         ['github'],
+        ['list'],
         ['html', { open: 'never' }],
         ['json', { outputFile: 'test-results/results.json' }],
       ]
