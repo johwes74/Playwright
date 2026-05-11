@@ -34,14 +34,57 @@ demo-app/
   server.js                # Minimal Node HTTP server (auto-started by Playwright)
 agent/
   playwright-agent.js      # Claude-driven browser agent
+  ollama-client.js         # Local open-source LLM client (Ollama HTTP API)
+  self-healing-locator.js  # Self-healing locator powered by Ollama
 playwright-tests/
   todo-app.spec.js         # 37 tests — Playwright capabilities demo
   agent-search.spec.js     # AI agent tests (skipped without ANTHROPIC_API_KEY)
+  seb-landing.spec.js      # seb.se landing-page tests + self-healing demo
   google-search.spec.js    # Retired (replaced by todo-app.spec.js)
 playwright.config.js       # Config — includes webServer block
 .github/workflows/
   playwright-manual.yml    # Manual GitHub Actions run
 ```
+
+## Self-healing locators with a local open-source LLM
+
+`agent/self-healing-locator.js` adds a `SelfHealingLocator` that first tries
+your primary CSS selector and, if it can't find the element, asks a local
+**open-source LLM** for a fresh selector based on a trimmed snapshot of the
+current DOM. The healed selector is cached per test run.
+
+**Recommended model: `llama3.1:8b` via [Ollama](https://ollama.com).**
+Why this choice:
+
+- **Open weights** (Meta Llama 3.1 community license) — no vendor lock-in.
+- **Runs entirely on your machine** — page HTML never leaves localhost, which
+  matters when tests touch authenticated banking flows like seb.se.
+- **Small enough for a laptop** (~5 GB) but capable of structured JSON output
+  for selector responses.
+- **No API key required** — Ollama exposes a plain HTTP server on
+  `127.0.0.1:11434`.
+
+Setup:
+
+```bash
+# Install Ollama: https://ollama.com/download
+ollama pull llama3.1:8b
+ollama serve   # usually started automatically by the desktop app
+```
+
+Override the defaults with `OLLAMA_HOST` and `OLLAMA_MODEL` if needed
+(e.g. `OLLAMA_MODEL=qwen2.5:7b` or `mistral:7b` are good alternatives).
+
+### seb.se landing-page demo
+
+```bash
+npm run test:seb           # tests the seb.se landing page
+npm run test:seb -- --headed
+```
+
+The spec includes a deliberately broken cookie-button selector to demonstrate
+the self-healing path. Tests gracefully skip when seb.se is unreachable or
+when Ollama isn't running locally.
 
 ## Demo app
 
