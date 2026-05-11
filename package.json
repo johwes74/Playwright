@@ -6,6 +6,7 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:agent": "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY playwright test agent-search",
+    "test:seb": "playwright test seb-landing",
     "test:report": "playwright show-report"
   },
   "devDependencies": {
